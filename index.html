@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GCV Group — Job Description Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0D1B2A;
+  --navy-mid: #121F39;
+  --navy-light: #1e3050;
+  --teal: #00B5AD;
+  --teal-light: #e6f7f7;
+  --teal-mid: #00968f;
+  --white: #ffffff;
+  --off-white: #F8F9FA;
+  --grey-100: #F1F3F5;
+  --grey-200: #E9ECEF;
+  --grey-300: #DEE2E6;
+  --grey-400: #CED4DA;
+  --grey-500: #ADB5BD;
+  --grey-600: #6C757D;
+  --grey-700: #495057;
+  --grey-800: #343A40;
+  --text: #1A2332;
+  --text-muted: #5a6a7a;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #F0F2F5;
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ── TOP NAV ── */
+.topnav {
+  background: var(--navy);
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  height: 56px;
+  gap: 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.topnav-logo { height: 28px; }
+.topnav-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-left: 1px solid rgba(255,255,255,0.15);
+  padding-left: 2rem;
+}
+.topnav-spacer { flex: 1; }
+.topnav-badge {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--teal);
+  background: rgba(0,181,173,0.12);
+  border: 1px solid rgba(0,181,173,0.25);
+  border-radius: 20px;
+  padding: 3px 10px;
+  letter-spacing: 0.03em;
+}
+
+/* ── LAYOUT ── */
+.app-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr 340px;
+  gap: 0;
+  min-height: calc(100vh - 56px);
+}
+
+/* ── LEFT SIDEBAR ── */
+.sidebar {
+  background: var(--white);
+  border-right: 1px solid var(--grey-200);
+  padding: 2rem 0;
+}
+.sidebar-section-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--grey-500);
+  padding: 0 1.5rem;
+  margin-bottom: 0.5rem;
+  margin-top: 1.5rem;
+}
+.sidebar-section-label:first-child { margin-top: 0; }
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 1.5rem;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: all 0.15s;
+}
+.step-item:hover { background: var(--grey-100); }
+.step-item.active { background: var(--teal-light); border-left-color: var(--teal); }
+.step-item.active .step-num { background: var(--teal); color: white; }
+.step-item.done .step-num { background: var(--navy); color: white; }
+.step-num {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--grey-200);
+  color: var(--grey-600);
+  font-size: 11px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.step-label { font-size: 13px; font-weight: 500; color: var(--text); }
+.step-item.active .step-label { color: var(--teal-mid); }
+.step-sub { font-size: 11px; color: var(--grey-500); margin-top: 1px; }
+.progress-bar {
+  margin: 2rem 1.5rem 0;
+  height: 3px;
+  background: var(--grey-200);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--teal);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+  width: 0%;
+}
+
+/* ── MAIN CONTENT ── */
+.main { padding: 2rem; overflow-y: auto; }
+.panel { display: none; }
+.panel.active { display: block; }
+.panel-heading { margin-bottom: 1.75rem; }
+.panel-heading h2 { font-size: 22px; font-weight: 600; color: var(--navy); margin-bottom: 4px; }
+.panel-heading p { font-size: 13px; color: var(--text-muted); }
+
+/* ── CARDS ── */
+.card {
+  background: var(--white);
+  border: 1px solid var(--grey-200);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+  box-shadow: var(--shadow);
+}
+.card-title {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--grey-600);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--grey-200);
+}
+
+/* ── FORM ELEMENTS ── */
+.field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.field-grid.thirds { grid-template-columns: 1fr 1fr 1fr; }
+.field-grid.single { grid-template-columns: 1fr; }
+.field { display: flex; flex-direction: column; gap: 5px; }
+label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--grey-700);
+  letter-spacing: 0.02em;
+}
+label.required::after { content: ' *'; color: var(--teal); }
+input[type="text"], select, textarea {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  padding: 9px 12px;
+  border: 1px solid var(--grey-300);
+  border-radius: var(--radius);
+  color: var(--text);
+  background: var(--white);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  width: 100%;
+}
+input[type="text"]:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(0,181,173,0.12);
+}
+textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+.help-text { font-size: 11px; color: var(--grey-500); margin-top: 2px; }
+
+/* ── ENTITY GRID ── */
+.entity-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.entity-opt {
+  border: 2px solid var(--grey-200);
+  border-radius: var(--radius);
+  padding: 1rem 0.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: var(--grey-100);
+}
+.entity-opt:hover { border-color: var(--teal); background: var(--teal-light); }
+.entity-opt.selected { border-color: var(--teal); background: var(--teal-light); box-shadow: 0 0 0 3px rgba(0,181,173,0.15); }
+.entity-short { font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.entity-name-label { font-size: 10px; color: var(--grey-600); }
+.entity-opt.selected .entity-short { color: var(--teal-mid); }
+
+.entity-info-panel {
+  display: none;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1rem 1.25rem;
+  background: var(--navy);
+  border-radius: var(--radius);
+  margin-top: 0.5rem;
+}
+.entity-info-panel.visible { display: flex; }
+.entity-logo-preview { height: 28px; filter: brightness(0) invert(1); flex-shrink: 0; }
+.entity-info-text { flex: 1; }
+.entity-info-name { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.9); margin-bottom: 3px; }
+.entity-info-desc { font-size: 11px; color: rgba(255,255,255,0.55); line-height: 1.5; }
+.entity-warn {
+  font-size: 11px;
+  color: #FFCA28;
+  background: rgba(255,202,40,0.1);
+  border: 1px solid rgba(255,202,40,0.25);
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin-top: 8px;
+  display: none;
+}
+
+/* ── LOCATION INFO ── */
+.location-info {
+  display: none;
+  background: var(--grey-100);
+  border: 1px solid var(--grey-200);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin-top: 1rem;
+}
+.location-info.visible { display: block; }
+.location-info-title { font-size: 11px; font-weight: 700; color: var(--navy); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.location-info-row { display: flex; gap: 1rem; margin-bottom: 0.5rem; font-size: 12px; }
+.location-info-key { font-weight: 600; color: var(--grey-700); min-width: 90px; flex-shrink: 0; }
+.location-info-val { color: var(--text-muted); }
+.location-note {
+  font-size: 11px;
+  color: var(--teal-mid);
+  background: var(--teal-light);
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin-top: 0.75rem;
+  border-left: 3px solid var(--teal);
+}
+
+/* ── NOTICES ── */
+.notice {
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  font-size: 12px;
+  margin-bottom: 1rem;
+}
+.notice-info { background: #EFF6FF; color: #1e40af; border: 1px solid #bfdbfe; }
+.notice-warn { background: #FFFBEB; color: #92400e; border: 1px solid #fde68a; }
+
+/* ── BUTTONS ── */
+.btn {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 9px 20px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+  letter-spacing: 0.01em;
+}
+.btn-primary { background: var(--navy); color: white; }
+.btn-primary:hover { background: var(--navy-light); }
+.btn-ghost { background: var(--grey-100); color: var(--grey-700); border: 1px solid var(--grey-300); }
+.btn-ghost:hover { background: var(--grey-200); }
+.btn-teal { background: var(--teal); color: white; }
+.btn-teal:hover { background: var(--teal-mid); }
+.btn-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--grey-200);
+}
+
+/* ── GENERATE OPTIONS ── */
+.generate-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+.generate-option {
+  border: 2px solid var(--grey-200);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: var(--white);
+  text-align: center;
+}
+.generate-option:hover { border-color: var(--teal); box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.generate-option-icon { font-size: 28px; margin-bottom: 10px; }
+.generate-option-title { font-size: 14px; font-weight: 600; color: var(--navy); margin-bottom: 6px; }
+.generate-option-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+/* ── RIGHT PREVIEW PANEL ── */
+.preview-panel {
+  background: var(--grey-100);
+  border-left: 1px solid var(--grey-200);
+  display: flex;
+  flex-direction: column;
+}
+.preview-panel-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--grey-200);
+  background: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.preview-panel-title { font-size: 12px; font-weight: 600; color: var(--grey-700); text-transform: uppercase; letter-spacing: 0.07em; }
+.preview-scroll { flex: 1; overflow-y: auto; padding: 1.25rem; }
+
+/* ── JD PREVIEW ── */
+.jd-preview {
+  background: white;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  font-size: 11px;
+}
+.jd-preview-header {
+  background: var(--navy-mid);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.jd-preview-entity-logo { height: 20px; }
+.jd-preview-gcv-logo { height: 16px; filter: brightness(0) invert(1); opacity: 0.7; }
+.jd-preview-body { padding: 16px; }
+.jd-preview-title { font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 2px; }
+.jd-preview-subtitle { font-size: 11px; color: var(--teal); margin-bottom: 10px; }
+.jd-preview-divider { height: 3px; background: var(--teal); border-radius: 2px; margin-bottom: 12px; }
+.jd-preview-meta { margin-bottom: 12px; }
+.jd-preview-meta-row { display: flex; gap: 8px; margin-bottom: 4px; font-size: 10px; }
+.jd-preview-meta-key { font-weight: 600; color: var(--grey-600); min-width: 70px; }
+.jd-preview-meta-val { color: var(--text); }
+.jd-preview-section { margin-bottom: 12px; }
+.jd-preview-section-title {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--navy);
+  padding-bottom: 4px;
+  border-bottom: 2px solid var(--teal);
+  margin-bottom: 8px;
+}
+.jd-preview-section p { font-size: 10px; line-height: 1.6; margin-bottom: 4px; color: var(--text); }
+.jd-preview-section ul { padding-left: 14px; }
+.jd-preview-section li { font-size: 10px; line-height: 1.5; margin-bottom: 2px; color: var(--text); }
+.jd-preview-cta {
+  background: var(--navy);
+  border-radius: 6px;
+  padding: 12px;
+  text-align: center;
+  margin-top: 16px;
+}
+.jd-preview-cta-title { font-size: 10px; font-weight: 600; color: white; margin-bottom: 2px; }
+.jd-preview-cta-email { font-size: 10px; color: var(--teal); }
+
+/* ── LOGO SVG PLACEHOLDERS ── */
+.logo-svg-gcv { display: inline-block; color: white; font-weight: 700; font-size: 14px; letter-spacing: 0.1em; }
+.logo-svg-entity { display: inline-block; color: white; font-weight: 700; font-size: 13px; letter-spacing: 0.05em; }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <svg class="topnav-logo" viewBox="0 0 80 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <text x="0" y="21" font-family="DM Sans, sans-serif" font-weight="700" font-size="20" fill="#00B5AD">GCV</text>
+    <text x="42" y="21" font-family="DM Sans, sans-serif" font-weight="300" font-size="14" fill="rgba(255,255,255,0.6)">Group</text>
+  </svg>
+  <span class="topnav-title">Job Description Builder</span>
+  <div class="topnav-spacer"></div>
+  <span class="topnav-badge">Internal Tool — Resourcing</span>
+</nav>
+
+<div class="app-layout">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section-label">Setup</div>
+    <div class="step-item active" onclick="goStep(1)" id="step-nav-1">
+      <div class="step-num" id="step-num-1">1</div>
+      <div>
+        <div class="step-label">Entity & role</div>
+        <div class="step-sub">Company, title, department</div>
+      </div>
+    </div>
+    <div class="step-item" onclick="goStep(2)" id="step-nav-2">
+      <div class="step-num" id="step-num-2">2</div>
+      <div>
+        <div class="step-label">Location</div>
+        <div class="step-sub">Region, visa, tax notes</div>
+      </div>
+    </div>
+    <div class="sidebar-section-label">Content</div>
+    <div class="step-item" onclick="goStep(3)" id="step-nav-3">
+      <div class="step-num" id="step-num-3">3</div>
+      <div>
+        <div class="step-label">Role overview</div>
+        <div class="step-sub">Purpose & scope</div>
+      </div>
+    </div>
+    <div class="step-item" onclick="goStep(4)" id="step-nav-4">
+      <div class="step-num" id="step-num-4">4</div>
+      <div>
+        <div class="step-label">Responsibilities</div>
+        <div class="step-sub">Key duties</div>
+      </div>
+    </div>
+    <div class="step-item" onclick="goStep(5)" id="step-nav-5">
+      <div class="step-num" id="step-num-5">5</div>
+      <div>
+        <div class="step-label">Requirements</div>
+        <div class="step-sub">Quals, skills, behaviours</div>
+      </div>
+    </div>
+    <div class="sidebar-section-label">Output</div>
+    <div class="step-item" onclick="goStep(6)" id="step-nav-6">
+      <div class="step-num" id="step-num-6">6</div>
+      <div>
+        <div class="step-label">Generate</div>
+        <div class="step-sub">Word doc or Lever copy</div>
+      </div>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- STEP 1: Entity & Role -->
+    <div class="panel active" id="panel-1">
+      <div class="panel-heading">
+        <h2>Entity & role details</h2>
+        <p>Select the GCV Group entity this role sits within, then fill in the core role information.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Select entity</div>
+        <div class="entity-grid">
+          <div class="entity-opt" onclick="selectEntity('GCx')" id="entity-GCx">
+            <div class="entity-short">GCx</div>
+            <div class="entity-name-label">Global Commissioning</div>
+          </div>
+          <div class="entity-opt" onclick="selectEntity('AEP')" id="entity-AEP">
+            <div class="entity-short">AEP</div>
+            <div class="entity-name-label">AEP Global</div>
+          </div>
+          <div class="entity-opt" onclick="selectEntity('CORE')" id="entity-CORE">
+            <div class="entity-short">CORE</div>
+            <div class="entity-name-label">Core Emirates</div>
+          </div>
+          <div class="entity-opt" onclick="selectEntity('SLC')" id="entity-SLC">
+            <div class="entity-short">SLC</div>
+            <div class="entity-name-label">Straightline Consulting</div>
+          </div>
+          <div class="entity-opt" onclick="selectEntity('GCV')" id="entity-GCV">
+            <div class="entity-short">GCV</div>
+            <div class="entity-name-label">Group-level role</div>
+          </div>
+        </div>
+        <div class="entity-info-panel" id="entity-info-panel">
+          <div id="entity-logo-preview" style="font-weight:700;font-size:18px;color:white;letter-spacing:0.05em;flex-shrink:0;"></div>
+          <div class="entity-info-text">
+            <div class="entity-info-name" id="entity-info-name"></div>
+            <div class="entity-info-desc" id="entity-info-desc"></div>
+            <div class="entity-warn" id="entity-warn"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Role information</div>
+        <div class="field-grid single" style="margin-bottom:1rem">
+          <div class="field">
+            <label class="required">Job title</label>
+            <input type="text" id="f-title" placeholder="e.g. Commissioning Engineer" oninput="updatePreview()">
+          </div>
+        </div>
+        <div class="field-grid" style="margin-bottom:1rem">
+          <div class="field">
+            <label>Seniority / grade</label>
+            <select id="f-seniority" onchange="updatePreview()">
+              <option value="">— Select —</option>
+              <option>Graduate</option>
+              <option>Engineer</option>
+              <option>Senior Engineer</option>
+              <option>Lead / SME</option>
+              <option>Principal</option>
+              <option>Manager</option>
+              <option>Senior Manager</option>
+              <option>Head of</option>
+              <option>Director</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="required">Department</label>
+            <select id="f-dept" onchange="updatePreview()">
+              <option value="">— Select —</option>
+              <option>Technical Delivery</option>
+              <option>Engineering</option>
+              <option>Operations</option>
+              <option>Commercial</option>
+              <option>Finance</option>
+              <option>People & HR</option>
+              <option>Marketing & Brand</option>
+              <option>Group Leadership</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-grid">
+          <div class="field">
+            <label>Reports to</label>
+            <input type="text" id="f-reports" placeholder="e.g. Head of Technical Delivery" oninput="updatePreview()">
+          </div>
+          <div class="field">
+            <label>Contract type</label>
+            <select id="f-contract" onchange="updatePreview()">
+              <option value="">— Select —</option>
+              <option>Permanent</option>
+              <option>Contract</option>
+              <option>Permanent / Contract</option>
+              <option>Fixed Term</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="goStep(2)">Continue to location →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Location -->
+    <div class="panel" id="panel-2">
+      <div class="panel-heading">
+        <h2>Location</h2>
+        <p>Select the primary work location. Visa and tax notes will auto-populate to guide the resourcing team.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Work location</div>
+        <div class="field-grid">
+          <div class="field">
+            <label class="required">Primary location</label>
+            <select id="f-location" onchange="updateLocation(); updatePreview()">
+              <option value="">— Select —</option>
+              <optgroup label="United Kingdom">
+                <option value="UK-London">London, UK</option>
+                <option value="UK-Remote">Remote, UK</option>
+                <option value="UK-Flexible">UK Flexible</option>
+              </optgroup>
+              <optgroup label="Europe">
+                <option value="EU-Amsterdam">Amsterdam, Netherlands</option>
+                <option value="EU-Frankfurt">Frankfurt, Germany</option>
+                <option value="EU-Dublin">Dublin, Ireland</option>
+                <option value="EU-Flexible">Europe Flexible</option>
+              </optgroup>
+              <optgroup label="Middle East">
+                <option value="ME-Dubai">Dubai, UAE</option>
+                <option value="ME-AbuDhabi">Abu Dhabi, UAE</option>
+                <option value="ME-Riyadh">Riyadh, Saudi Arabia</option>
+              </optgroup>
+              <optgroup label="Multi-region">
+                <option value="EMEA">UK / Europe (EMEA travel)</option>
+                <option value="EMEA-ME">EMEA + Middle East</option>
+                <option value="Global">Global / International</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="field">
+            <label>Site presence</label>
+            <select id="f-presence" onchange="updatePreview()">
+              <option value="">— Select —</option>
+              <option>Office-based</option>
+              <option>Remote-first</option>
+              <option>Hybrid</option>
+              <option>Site-based (25–50%)</option>
+              <option>Site-based (50–75%)</option>
+              <option>Site-based (75–100%)</option>
+            </select>
+          </div>
+        </div>
+        <div id="location-info-block" class="location-info">
+          <div class="location-info-title" id="loc-title"></div>
+          <div class="location-info-row">
+            <span class="location-info-key">Visa / RTW</span>
+            <span class="location-info-val" id="loc-visa"></span>
+          </div>
+          <div class="location-info-row">
+            <span class="location-info-key">Tax / payroll</span>
+            <span class="location-info-val" id="loc-tax"></span>
+          </div>
+          <div class="location-note" id="loc-note" style="display:none"></div>
+        </div>
+      </div>
+      <div class="notice notice-info">
+        <span>ⓘ</span>
+        <span>These notes are for the resourcing team only — they do not appear in the published job description. Always confirm with Finance & HR before extending offers in new jurisdictions.</span>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="goStep(1)">← Back</button>
+        <button class="btn btn-primary" onclick="goStep(3)">Continue to role overview →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Overview -->
+    <div class="panel" id="panel-3">
+      <div class="panel-heading">
+        <h2>Role overview</h2>
+        <p>Describe the purpose and scope of the role. This becomes the opening section of the JD. Write in full sentences — aim for 2–4 paragraphs.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Overview</div>
+        <div class="field">
+          <label>Role purpose & scope</label>
+          <textarea id="f-overview" rows="8" placeholder="The [Job Title] is responsible for...&#10;&#10;This role acts as...&#10;&#10;The role supports..." oninput="updatePreview()"></textarea>
+          <span class="help-text">Each paragraph on a new line. These display as separate paragraphs in the final JD.</span>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="goStep(2)">← Back</button>
+        <button class="btn btn-primary" onclick="goStep(4)">Continue to responsibilities →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: Responsibilities -->
+    <div class="panel" id="panel-4">
+      <div class="panel-heading">
+        <h2>Primary responsibilities</h2>
+        <p>List the key duties for this role. Each line becomes a bullet point in the JD.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Responsibilities</div>
+        <div class="field">
+          <label>Key responsibilities — one per line</label>
+          <textarea id="f-responsibilities" rows="10" placeholder="Lead commissioning activities across multiple projects&#10;Manage and mentor junior engineers&#10;Liaise with client stakeholders at all levels&#10;Produce and review commissioning documentation" oninput="updatePreview()"></textarea>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="goStep(3)">← Back</button>
+        <button class="btn btn-primary" onclick="goStep(5)">Continue to requirements →</button>
+      </div>
+    </div>
+
+    <!-- STEP 5: Requirements -->
+    <div class="panel" id="panel-5">
+      <div class="panel-heading">
+        <h2>Requirements</h2>
+        <p>Fill in qualifications, skills & experience, and the key behaviours you are looking for.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Qualifications</div>
+        <div class="field">
+          <textarea id="f-quals" rows="5" placeholder="HNC / HND / BEng in Electrical Engineering or equivalent — highly desirable&#10;Relevant HV authorisations or training — essential&#10;Chartered Engineer status or working towards — desirable" oninput="updatePreview()"></textarea>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Skills & experience</div>
+        <div class="field">
+          <textarea id="f-skills" rows="7" placeholder="Extensive experience in commissioning HV/LV systems&#10;Strong understanding of data centre MEP infrastructure&#10;Proven ability to manage project delivery to programme and budget" oninput="updatePreview()"></textarea>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Key behaviours</div>
+        <div class="field">
+          <textarea id="f-behaviours" rows="5" placeholder="Strong commitment to health and safety&#10;Collaborative mindset with a focus on delivering high-quality outcomes&#10;Proactive and detail-oriented approach" oninput="updatePreview()"></textarea>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="goStep(4)">← Back</button>
+        <button class="btn btn-primary" onclick="goStep(6)">Continue to generate →</button>
+      </div>
+    </div>
+
+    <!-- STEP 6: Generate -->
+    <div class="panel" id="panel-6">
+      <div class="panel-heading">
+        <h2>Generate your JD</h2>
+        <p>Choose your output format. The branded Word document is for internal approval and PDFs. The Lever copy is ready to paste straight into your ATS.</p>
+      </div>
+      <div id="validation-notice" class="notice notice-warn" style="display:none">
+        <span>⚠</span>
+        <span id="validation-msg">Please fill in all required fields before generating.</span>
+      </div>
+      <div class="generate-grid">
+        <div class="generate-option" onclick="generateWord()">
+          <div class="generate-option-icon">📄</div>
+          <div class="generate-option-title">Branded Word document</div>
+          <div class="generate-option-desc">Fully formatted .doc with GCV Group branding and all sections. For sign-off and PDF distribution.</div>
+        </div>
+        <div class="generate-option" onclick="generateLeverCopy()">
+          <div class="generate-option-icon">📋</div>
+          <div class="generate-option-title">Lever-ready copy</div>
+          <div class="generate-option-desc">Clean plain text formatted for pasting directly into a Lever job posting template. One click to copy.</div>
+        </div>
+      </div>
+      <div id="lever-output" style="display:none; margin-top:1.25rem">
+        <div class="card">
+          <div class="card-title">Lever copy — ready to paste</div>
+          <div style="display:flex; justify-content:flex-end; margin-bottom:0.75rem">
+            <button class="btn btn-teal" onclick="copyLever()">Copy all text</button>
+          </div>
+          <pre id="lever-text" style="white-space:pre-wrap; font-family:'DM Mono', monospace; font-size:11px; color:var(--text); background:var(--grey-100); padding:1rem; border-radius:var(--radius); max-height:400px; overflow-y:auto; line-height:1.7"></pre>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="goStep(5)">← Back</button>
+        <button class="btn btn-ghost" onclick="resetForm()">Start new JD</button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- RIGHT PREVIEW PANEL -->
+  <aside class="preview-panel">
+    <div class="preview-panel-header">
+      <span class="preview-panel-title">Live preview</span>
+      <span style="font-size:11px; color:var(--grey-400)">Updates as you type</span>
+    </div>
+    <div class="preview-scroll">
+      <div class="jd-preview" id="jd-preview">
+        <div class="jd-preview-header">
+          <div id="prev-entity-logo" style="font-weight:700;font-size:13px;color:white;letter-spacing:0.05em;display:none;"></div>
+          <div style="font-weight:700;font-size:13px;color:rgba(255,255,255,0.7);letter-spacing:0.08em;">GCV Group</div>
+        </div>
+        <div class="jd-preview-body">
+          <div class="jd-preview-title" id="prev-title" style="color:var(--grey-300)">Job title will appear here</div>
+          <div class="jd-preview-subtitle" id="prev-subtitle"></div>
+          <div class="jd-preview-divider"></div>
+          <div class="jd-preview-meta" id="prev-meta"></div>
+          <div class="jd-preview-section" id="prev-about" style="display:none">
+            <div class="jd-preview-section-title">About</div>
+            <p id="prev-about-text"></p>
+          </div>
+          <div class="jd-preview-section" id="prev-overview-section" style="display:none">
+            <div class="jd-preview-section-title">Role overview</div>
+            <div id="prev-overview-content"></div>
+          </div>
+          <div class="jd-preview-section" id="prev-resp-section" style="display:none">
+            <div class="jd-preview-section-title">Responsibilities</div>
+            <ul id="prev-resp-list"></ul>
+          </div>
+          <div class="jd-preview-section" id="prev-quals-section" style="display:none">
+            <div class="jd-preview-section-title">Qualifications</div>
+            <ul id="prev-quals-list"></ul>
+          </div>
+          <div class="jd-preview-section" id="prev-skills-section" style="display:none">
+            <div class="jd-preview-section-title">Skills & experience</div>
+            <ul id="prev-skills-list"></ul>
+          </div>
+          <div class="jd-preview-section" id="prev-beh-section" style="display:none">
+            <div class="jd-preview-section-title">Key behaviours</div>
+            <ul id="prev-beh-list"></ul>
+          </div>
+          <div class="jd-preview-cta">
+            <div class="jd-preview-cta-title">Interested in this role?</div>
+            <div class="jd-preview-cta-email">careers@gcvgroup.com</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────
+
+const ENTITIES = {
+  GCx: {
+    name: "Global Commissioning",
+    short: "GCx",
+    region: "UK, Europe, EMEA",
+    desc: "Specialist commissioning consultancy delivering world-class CxA, MEP Validation, and Specialist Electrical Services to the data centre and mission-critical infrastructure sector.",
+    about: "Global Commissioning (GCx) is a specialist consultancy delivering world-class Commissioning Agent, MEP Validation, and Specialist Electrical Services to the global data centre and mission-critical infrastructure sector. Part of GCV Group.",
+    warn: null
+  },
+  AEP: {
+    name: "AEP Global",
+    short: "AEP",
+    region: "UK, Europe, EMEA",
+    desc: "Specialist commissioning and validation consultancy operating across EMEA, delivering mission-critical infrastructure lifecycle assurance.",
+    about: "AEP Global is a specialist commissioning and validation consultancy operating across EMEA, delivering mission-critical infrastructure lifecycle assurance. Part of GCV Group.",
+    warn: null
+  },
+  CORE: {
+    name: "Core Emirates",
+    short: "CORE",
+    region: "UAE, Middle East, EMEA",
+    desc: "Specialist commissioning and infrastructure assurance services for the Middle East and broader EMEA region.",
+    about: "Core Emirates delivers specialist commissioning and infrastructure assurance services across the Middle East and EMEA region. Part of GCV Group.",
+    warn: null
+  },
+  SLC: {
+    name: "Straightline Consulting",
+    short: "SLC",
+    region: "UK, Europe",
+    desc: "Specialist engineering consulting services across mission-critical and infrastructure projects.",
+    about: "Straightline Consulting delivers specialist engineering consulting services across mission-critical and infrastructure projects. Part of GCV Group.",
+    warn: "SLC is not publicly named externally. Use 'part of GCV Group' language only in any client-facing version of this JD."
+  },
+  GCV: {
+    name: "GCV Group",
+    short: "GCV",
+    region: "EMEA",
+    desc: "Group-level role spanning all GCV Group entities — Global Commissioning, AEP Global, and Core Emirates.",
+    about: "GCV Group is a specialist infrastructure lifecycle assurance group operating across EMEA, bringing together Global Commissioning, AEP Global, and Core Emirates.",
+    warn: null
+  }
+};
+
+const LOCATIONS = {
+  "UK-London": {
+    label: "London, UK",
+    visa: "No visa requirements for UK nationals. EU/EEA nationals require valid right-to-work documentation. Non-EEA nationals require a Skilled Worker visa.",
+    tax: "PAYE — UK income tax and National Insurance applies.",
+    note: null
+  },
+  "UK-Remote": {
+    label: "Remote, UK",
+    visa: "Right-to-work check required for all candidates regardless of nationality.",
+    tax: "PAYE — UK income tax and National Insurance applies.",
+    note: null
+  },
+  "UK-Flexible": {
+    label: "UK Flexible",
+    visa: "Right-to-work check required for all candidates.",
+    tax: "PAYE — UK income tax and National Insurance applies.",
+    note: null
+  },
+  "EU-Amsterdam": {
+    label: "Amsterdam, Netherlands",
+    visa: "EU/EEA nationals have automatic right to work. Non-EU candidates require a GVVA work permit (4–8 week lead time).",
+    tax: "Dutch payroll required. 30% ruling may apply for qualifying expats — confirm with Finance.",
+    note: "GCx operates with full tax and visa compliance in the Netherlands."
+  },
+  "EU-Frankfurt": {
+    label: "Frankfurt, Germany",
+    visa: "EU nationals have right to work. Non-EU candidates require a German work permit. Allow 6–10 weeks.",
+    tax: "German payroll structure required. Social security (health, pension, unemployment) contributions apply.",
+    note: "GCx operates with full tax and visa compliance in Germany."
+  },
+  "EU-Dublin": {
+    label: "Dublin, Ireland",
+    visa: "UK and EU/EEA nationals have right to work. Non-EEA candidates require an Employment Permit.",
+    tax: "Irish PAYE payroll structure applies. USC and PRSI contributions apply.",
+    note: null
+  },
+  "EU-Flexible": {
+    label: "Europe Flexible",
+    visa: "Varies by country. EU nationals generally have right to work across EU member states. UK nationals may require work permits for EU-based roles.",
+    tax: "Payroll structure depends on country of primary work — confirm with Finance before advertising.",
+    note: "Candidate work location to be agreed and confirmed at offer stage."
+  },
+  "ME-Dubai": {
+    label: "Dubai, UAE",
+    visa: "All non-UAE nationals require an employment visa. Core Emirates handles UAE visa sponsorship — allow 3–6 weeks.",
+    tax: "No personal income tax in UAE. Social security does not apply to most expatriate workers.",
+    note: "Core Emirates is the GCV Group entity for UAE sponsorship and local compliance."
+  },
+  "ME-AbuDhabi": {
+    label: "Abu Dhabi, UAE",
+    visa: "All non-UAE nationals require an employment visa sponsored by the employing entity. Core Emirates handles UAE sponsorship.",
+    tax: "No personal income tax in UAE.",
+    note: "Core Emirates handles UAE visa sponsorship and compliance."
+  },
+  "ME-Riyadh": {
+    label: "Riyadh, Saudi Arabia",
+    visa: "Foreign nationals require an Iqama (residency permit) — sponsored by the employing entity. Allow 4–8 weeks from offer.",
+    tax: "No income tax for expatriates. GOSI contributions may apply. Finance sign-off required.",
+    note: "GCx operates with full tax and visa compliance in KSA. Confirm entity sponsorship arrangement with Finance before advertising."
+  },
+  "EMEA": {
+    label: "UK / Europe (EMEA travel)",
+    visa: "Varies by country of residence. EU nationals have EU-wide right to work. UK nationals may need work authorisation for extended EU project stays.",
+    tax: "Tax residence depends on primary employment location — confirm with Finance.",
+    note: "Extended stays in any single country (typically 90+ days) may trigger local tax obligations."
+  },
+  "EMEA-ME": {
+    label: "EMEA + Middle East",
+    visa: "Complex multi-jurisdiction arrangement. Visa requirements vary by destination country and candidate nationality. HR and Finance sign-off required.",
+    tax: "Multi-jurisdiction tax compliance may be required. Finance must review before offer.",
+    note: "Extended project stays abroad may trigger local employment tax obligations. Finance sign-off required at offer stage."
+  },
+  "Global": {
+    label: "Global / International",
+    visa: "Highly variable — right-to-work and visa requirements depend on nationality and destination country.",
+    tax: "Multi-jurisdiction tax compliance applies. Finance sign-off required before advertising.",
+    note: "Global mobility arrangement — confirm fully with HR and Finance before advertising this role."
+  }
+};
+
+// ── STATE ──────────────────────────────────────────────────────────────────
+let selectedEntity = null;
+let currentStep = 1;
+
+// ── NAVIGATION ──────────────────────────────────────────────────────────────
+function goStep(n) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.step-item').forEach(s => s.classList.remove('active'));
+  document.getElementById('panel-' + n).classList.add('active');
+  document.getElementById('step-nav-' + n).classList.add('active');
+  currentStep = n;
+  updateProgress();
+}
+
+function updateProgress() {
+  const pct = ((currentStep - 1) / 5) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  for (let i = 1; i <= 6; i++) {
+    const num = document.getElementById('step-num-' + i);
+    if (i < currentStep) {
+      num.textContent = '✓';
+      document.getElementById('step-nav-' + i).classList.add('done');
+    } else {
+      num.textContent = i;
+      document.getElementById('step-nav-' + i).classList.remove('done');
+    }
+  }
+}
+
+// ── ENTITY SELECTION ──────────────────────────────────────────────────────
+function selectEntity(key) {
+  selectedEntity = key;
+  document.querySelectorAll('.entity-opt').forEach(el => el.classList.remove('selected'));
+  document.getElementById('entity-' + key).classList.add('selected');
+  const e = ENTITIES[key];
+  const panel = document.getElementById('entity-info-panel');
+  panel.classList.add('visible');
+  document.getElementById('entity-logo-preview').textContent = e.short;
+  document.getElementById('entity-info-name').textContent = e.name + ' — ' + e.region;
+  document.getElementById('entity-info-desc').textContent = e.desc;
+  const warnEl = document.getElementById('entity-warn');
+  if (e.warn) {
+    warnEl.textContent = e.warn;
+    warnEl.style.display = 'block';
+  } else {
+    warnEl.style.display = 'none';
+  }
+  updatePreview();
+}
+
+// ── LOCATION UPDATE ──────────────────────────────────────────────────────
+function updateLocation() {
+  const val = document.getElementById('f-location').value;
+  const block = document.getElementById('location-info-block');
+  if (!val || !LOCATIONS[val]) {
+    block.classList.remove('visible');
+    return;
+  }
+  const d = LOCATIONS[val];
+  block.classList.add('visible');
+  document.getElementById('loc-title').textContent = d.label + ' — Compliance notes';
+  document.getElementById('loc-visa').textContent = d.visa;
+  document.getElementById('loc-tax').textContent = d.tax;
+  const noteEl = document.getElementById('loc-note');
+  if (d.note) {
+    noteEl.textContent = d.note;
+    noteEl.style.display = 'block';
+  } else {
+    noteEl.style.display = 'none';
+  }
+}
+
+// ── LIVE PREVIEW ──────────────────────────────────────────────────────────
+function updatePreview() {
+  const e = selectedEntity ? ENTITIES[selectedEntity] : null;
+  const title = document.getElementById('f-title').value;
+  const seniority = document.getElementById('f-seniority').value;
+  const dept = document.getElementById('f-dept') ? document.getElementById('f-dept').value : '';
+  const reports = document.getElementById('f-reports') ? document.getElementById('f-reports').value : '';
+  const contract = document.getElementById('f-contract') ? document.getElementById('f-contract').value : '';
+  const locVal = document.getElementById('f-location') ? document.getElementById('f-location').value : '';
+  const locLabel = locVal && LOCATIONS[locVal] ? LOCATIONS[locVal].label : locVal;
+  const presence = document.getElementById('f-presence') ? document.getElementById('f-presence').value : '';
+
+  // Entity logo in preview header
+  const logoEl = document.getElementById('prev-entity-logo');
+  if (e) {
+    logoEl.textContent = e.short;
+    logoEl.style.display = 'block';
+  } else {
+    logoEl.style.display = 'none';
+  }
+
+  // Title
+  const titleEl = document.getElementById('prev-title');
+  titleEl.textContent = title || 'Job title will appear here';
+  titleEl.style.color = title ? 'var(--navy)' : 'var(--grey-300)';
+
+  // Subtitle
+  document.getElementById('prev-subtitle').textContent = seniority || '';
+
+  // Meta rows
+  const rows = [];
+  if (e) rows.push(['Entity', e.name]);
+  if (locLabel) rows.push(['Location', locLabel]);
+  if (dept) rows.push(['Department', dept]);
+  if (reports) rows.push(['Reports to', reports]);
+  if (contract) rows.push(['Contract', contract]);
+  if (presence) rows.push(['Presence', presence]);
+  document.getElementById('prev-meta').innerHTML = rows.map(([k,v]) =>
+    `<div class="jd-preview-meta-row"><span class="jd-preview-meta-key">${k}</span><span class="jd-preview-meta-val">${v}</span></div>`
+  ).join('');
+
+  // About
+  const aboutSec = document.getElementById('prev-about');
+  if (e) {
+    aboutSec.style.display = 'block';
+    document.getElementById('prev-about-text').textContent = e.about;
+  } else {
+    aboutSec.style.display = 'none';
+  }
+
+  // Overview
+  const overviewVal = document.getElementById('f-overview') ? document.getElementById('f-overview').value.trim() : '';
+  const overviewSec = document.getElementById('prev-overview-section');
+  if (overviewVal) {
+    overviewSec.style.display = 'block';
+    document.getElementById('prev-overview-content').innerHTML = overviewVal.split('\n').filter(l=>l.trim()).map(l=>`<p>${l}</p>`).join('');
+  } else {
+    overviewSec.style.display = 'none';
+  }
+
+  // Bullets helper
+  function setBullets(fieldId, sectionId, listId) {
+    const val = document.getElementById(fieldId) ? document.getElementById(fieldId).value.trim() : '';
+    const sec = document.getElementById(sectionId);
+    if (val) {
+      sec.style.display = 'block';
+      document.getElementById(listId).innerHTML = val.split('\n').filter(l=>l.trim()).map(l=>`<li>${l}</li>`).join('');
+    } else {
+      sec.style.display = 'none';
+    }
+  }
+  setBullets('f-responsibilities', 'prev-resp-section', 'prev-resp-list');
+  setBullets('f-quals', 'prev-quals-section', 'prev-quals-list');
+  setBullets('f-skills', 'prev-skills-section', 'prev-skills-list');
+  setBullets('f-behaviours', 'prev-beh-section', 'prev-beh-list');
+}
+
+// ── VALIDATION ──────────────────────────────────────────────────────────
+function validate() {
+  const issues = [];
+  if (!selectedEntity) issues.push('entity');
+  if (!document.getElementById('f-title').value.trim()) issues.push('job title');
+  if (!document.getElementById('f-dept').value) issues.push('department');
+  if (!document.getElementById('f-location').value) issues.push('location');
+  return issues;
+}
+
+// ── GENERATE LEVER COPY ──────────────────────────────────────────────────
+function generateLeverCopy() {
+  const issues = validate();
+  if (issues.length) {
+    document.getElementById('validation-notice').style.display = 'flex';
+    document.getElementById('validation-msg').textContent = 'Please fill in: ' + issues.join(', ') + '.';
+    return;
+  }
+  document.getElementById('validation-notice').style.display = 'none';
+  const e = ENTITIES[selectedEntity];
+  const title = document.getElementById('f-title').value.trim();
+  const seniority = document.getElementById('f-seniority').value;
+  const dept = document.getElementById('f-dept').value;
+  const reports = document.getElementById('f-reports').value;
+  const contract = document.getElementById('f-contract').value;
+  const locVal = document.getElementById('f-location').value;
+  const locLabel = LOCATIONS[locVal] ? LOCATIONS[locVal].label : locVal;
+  const presence = document.getElementById('f-presence').value;
+  const overview = document.getElementById('f-overview').value.trim();
+  const resp = document.getElementById('f-responsibilities').value.trim();
+  const quals = document.getElementById('f-quals').value.trim();
+  const skills = document.getElementById('f-skills').value.trim();
+  const beh = document.getElementById('f-behaviours').value.trim();
+
+  const bulletLines = (text) => text ? text.split('\n').filter(l=>l.trim()).map(l=>'• ' + l.trim()).join('\n') : '';
+  const divider = '─'.repeat(48);
+
+  let copy = '';
+  copy += `${title}${seniority ? ' — ' + seniority : ''}\n`;
+  copy += `${e.name} | Part of GCV Group\n\n`;
+  copy += `Location: ${locLabel}\n`;
+  if (dept) copy += `Department: ${dept}\n`;
+  if (reports) copy += `Reports to: ${reports}\n`;
+  if (contract) copy += `Contract: ${contract}\n`;
+  if (presence) copy += `Site presence: ${presence}\n`;
+  copy += '\n';
+  copy += `ABOUT ${e.name.toUpperCase()}\n${divider}\n`;
+  copy += e.about + '\n';
+  copy += 'GCV Group is a specialist infrastructure lifecycle assurance group operating across EMEA.\n';
+  if (overview) {
+    copy += `\nOVERVIEW\n${divider}\n`;
+    copy += overview + '\n';
+  }
+  if (resp) {
+    copy += `\nRESPONSIBILITIES\n${divider}\n`;
+    copy += bulletLines(resp) + '\n';
+  }
+  if (quals) {
+    copy += `\nQUALIFICATIONS\n${divider}\n`;
+    copy += bulletLines(quals) + '\n';
+  }
+  if (skills) {
+    copy += `\nSKILLS & EXPERIENCE\n${divider}\n`;
+    copy += bulletLines(skills) + '\n';
+  }
+  if (beh) {
+    copy += `\nKEY BEHAVIOURS\n${divider}\n`;
+    copy += bulletLines(beh) + '\n';
+  }
+  copy += `\n${divider}\n`;
+  copy += `Interested in this role? Get in touch: careers@gcvgroup.com\n`;
+  copy += `Part of GCV Group — gcvgroup.com\n`;
+
+  document.getElementById('lever-text').textContent = copy;
+  document.getElementById('lever-output').style.display = 'block';
+  document.getElementById('lever-output').scrollIntoView({ behavior: 'smooth' });
+}
+
+function copyLever() {
+  const text = document.getElementById('lever-text').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = event.target;
+    btn.textContent = 'Copied ✓';
+    btn.style.background = 'var(--navy)';
+    setTimeout(() => {
+      btn.textContent = 'Copy all text';
+      btn.style.background = '';
+    }, 2000);
+  });
+}
+
+// ── GENERATE WORD DOC ────────────────────────────────────────────────────
+function generateWord() {
+  const issues = validate();
+  if (issues.length) {
+    document.getElementById('validation-notice').style.display = 'flex';
+    document.getElementById('validation-msg').textContent = 'Please fill in: ' + issues.join(', ') + '.';
+    return;
+  }
+  document.getElementById('validation-notice').style.display = 'none';
+  const e = ENTITIES[selectedEntity];
+  const title = document.getElementById('f-title').value.trim();
+  const seniority = document.getElementById('f-seniority').value;
+  const dept = document.getElementById('f-dept').value;
+  const reports = document.getElementById('f-reports').value;
+  const contract = document.getElementById('f-contract').value;
+  const locVal = document.getElementById('f-location').value;
+  const locLabel = LOCATIONS[locVal] ? LOCATIONS[locVal].label : locVal;
+  const presence = document.getElementById('f-presence').value;
+  const overview = document.getElementById('f-overview').value.trim();
+  const resp = document.getElementById('f-responsibilities').value.trim();
+  const quals = document.getElementById('f-quals').value.trim();
+  const skills = document.getElementById('f-skills').value.trim();
+  const beh = document.getElementById('f-behaviours').value.trim();
+
+  const rows = [
+    ['Entity', e.name],
+    ['Location', locLabel],
+    dept && ['Department', dept],
+    reports && ['Reports to', reports],
+    contract && ['Contract type', contract],
+    presence && ['Site presence', presence],
+  ].filter(Boolean);
+
+  const metaTable = `
+    <table border="0" cellpadding="4" cellspacing="0" style="width:100%; border-collapse:collapse; margin:16px 0;">
+      ${rows.map(([k,v]) => `
+        <tr>
+          <td style="font-weight:bold; color:#0D1B2A; background:#F4F6F8; width:140px; padding:8px 12px; border-bottom:1px solid #dee2e6;">${k}</td>
+          <td style="padding:8px 12px; border-bottom:1px solid #dee2e6;">${v}</td>
+        </tr>`).join('')}
+    </table>`;
+
+  const bulletList = (text) => text ? `<ul>${text.split('\n').filter(l=>l.trim()).map(l=>`<li style="margin-bottom:4px">${l.trim()}</li>`).join('')}</ul>` : '';
+  const paraText = (text) => text ? text.split('\n').filter(l=>l.trim()).map(l=>`<p style="margin-bottom:8px">${l}</p>`).join('') : '';
+  const section = (heading, content) => content ? `
+    <div style="margin:20px 0 8px; padding-bottom:4px; border-bottom:3px solid #00B5AD;">
+      <span style="font-size:11px; font-weight:bold; text-transform:uppercase; letter-spacing:1px; color:#0D1B2A;">${heading}</span>
+    </div>
+    ${content}` : '';
+
+  const htmlContent = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<style>
+  body { font-family: Arial, sans-serif; font-size: 11pt; color: #1A2332; margin: 0; padding: 0; }
+  p { margin: 0 0 8px; line-height: 1.6; }
+  ul { margin: 0 0 8px; padding-left: 20px; }
+  li { margin-bottom: 3px; line-height: 1.5; }
+</style>
+</head><body>
+<table style="width:100%; background:#121F39; margin-bottom:0;" cellpadding="0" cellspacing="0">
+  <tr>
+    <td style="padding:12px 20px; vertical-align:middle; color:white; font-family:Arial,sans-serif; font-weight:bold; font-size:18px; letter-spacing:2px;">
+      ${e.short}
+    </td>
+    <td style="padding:12px 20px; text-align:right; vertical-align:middle; color:#00B5AD; font-family:Arial,sans-serif; font-weight:bold; font-size:14px; letter-spacing:3px;">
+      GCV Group
+    </td>
+  </tr>
+</table>
+<div style="padding:32px 40px;">
+  <h1 style="font-size:24pt; font-weight:bold; color:#0D1B2A; margin:0 0 4px;">${title}</h1>
+  ${seniority ? `<p style="font-size:14pt; color:#00B5AD; margin:0 0 16px;">${seniority}</p>` : ''}
+  <div style="height:4px; background:#00B5AD; margin-bottom:20px; border-radius:2px;"></div>
+  ${metaTable}
+  ${section('About ' + e.name, `<p>${e.about}</p><p>GCV Group is a specialist infrastructure lifecycle assurance group operating across EMEA, bringing together leading names in commissioning, validation, and specialist electrical services.</p>`)}
+  ${overview ? section('Role overview', paraText(overview)) : ''}
+  ${resp ? section('Primary responsibilities', bulletList(resp)) : ''}
+  ${quals ? section('Qualifications', bulletList(quals)) : ''}
+  ${skills ? section('Skills & experience', bulletList(skills)) : ''}
+  ${beh ? section('Key behaviours', bulletList(beh)) : ''}
+  <div style="background:#0D1B2A; padding:20px; text-align:center; margin-top:32px; border-radius:6px;">
+    <p style="color:white; font-weight:bold; font-size:12pt; margin-bottom:4px;">Interested in this role?</p>
+    <p style="color:#00B5AD; margin:0;">careers@gcvgroup.com</p>
+  </div>
+</div>
+</body></html>`;
+
+  const blob = new Blob([htmlContent], { type: 'application/msword' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `GCV_JD_${title.replace(/[^a-zA-Z0-9]/g, '_')}_${selectedEntity}.doc`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── RESET ────────────────────────────────────────────────────────────────
+function resetForm() {
+  if (!confirm('Start a new JD? This will clear all current content.')) return;
+  selectedEntity = null;
+  document.querySelectorAll('.entity-opt').forEach(el => el.classList.remove('selected'));
+  document.getElementById('entity-info-panel').classList.remove('visible');
+  ['f-title','f-seniority','f-dept','f-reports','f-contract','f-location','f-presence','f-overview','f-responsibilities','f-quals','f-skills','f-behaviours'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('lever-output').style.display = 'none';
+  document.getElementById('location-info-block').classList.remove('visible');
+  goStep(1);
+  updatePreview();
+}
+</script>
+</body>
+</html>
